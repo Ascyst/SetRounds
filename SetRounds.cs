@@ -22,23 +22,11 @@ namespace SetRoundsPlugin
 
         public static string setRounds = "5";
 
-        public static int roundsToSet;
+
         private void Awake()
         {
             new Harmony(ModId).PatchAll();
             NetworkingManager.RegisterEvent(NetworkEventType.SyncRounds, sync => setRounds = (string)sync[0]);
-            On.GM_ArmsRace.StartGame += GM_ArmsRace_StartGame;
-        }
-        private void GM_ArmsRace_StartGame(On.GM_ArmsRace.orig_StartGame orig, GM_ArmsRace self)
-        {
-            if (int.TryParse(setRounds, out roundsToSet))
-            {
-                if (roundsToSet > 1)
-                {
-                    self.roundsToWinGame = roundsToSet;
-                    UIHandler.instance.InvokeMethod("SetNumberOfRounds", roundsToSet);
-                }
-            }
         }
         private void Start()
         {
@@ -66,6 +54,46 @@ namespace SetRoundsPlugin
             }
         }
     }
+}
 
+namespace GM_ArmsRace_Patch
+{
+    [HarmonyPatch(typeof(GM_ArmsRace), "StartGame")]
+    public class GM_ArmsRace_StartGame_Patch
+    { 
+        public static int roundsToSet;
+        [HarmonyPostfix]
+        private static void Postfix(ref int ___roundsToWinGame)
+        {
+            if (int.TryParse(SetRoundsPlugin.SetRounds.setRounds, out roundsToSet))
+            {
+                if (roundsToSet > 1)
+                {
+                    ___roundsToWinGame = roundsToSet;
+                    UIHandler.instance.InvokeMethod("SetNumberOfRounds", roundsToSet);
+                }
+            }
+        }
+    }
+}
 
+namespace GM_DeathMatch_Patch
+{
+    [HarmonyPatch(typeof(RWF.GameModes.GM_Deathmatch), "StartGame")]
+    public class GM_Deathmatch_StartGame_Patch
+    {
+        public static int roundsToSet;
+        [HarmonyPostfix]
+        private static void Postfix(ref int ___roundsToWinGame)
+        {
+            if (int.TryParse(SetRoundsPlugin.SetRounds.setRounds, out roundsToSet))
+            {
+                if (roundsToSet > 1)
+                {
+                    ___roundsToWinGame = roundsToSet;
+                    UIHandler.instance.InvokeMethod("SetNumberOfRounds", roundsToSet);
+                }
+            }
+        }
+    }
 }

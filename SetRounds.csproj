@@ -61,6 +61,9 @@
     <Reference Include="PhotonWebSocket">
       <HintPath>..\Pick Your Poison\Libs\PhotonWebSocket.dll</HintPath>
     </Reference>
+    <Reference Include="RoundsWithFriends">
+      <HintPath>C:\Users\tyler\Desktop\RoundsWithFriends-1.1.0-alpha\BepInEx\plugins\RoundsWithFriends.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data.DataSetExtensions" />
