@@ -3,12 +3,14 @@ using BepInEx;
 using HarmonyLib;
 using Photon.Pun;
 using UnboundLib;
+using UnboundLib.GameModes;
 using UnityEngine;
+using System.Collections;
 
 namespace SetRoundsPlugin
 {
     [BepInDependency("com.willis.rounds.unbound", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(ModId, ModName, "1.0.0.1")]
+    [BepInPlugin(ModId, ModName, "1.0.0")]
     [BepInProcess("Rounds.exe")]
     public class SetRounds : BaseUnityPlugin
     {
@@ -22,12 +24,19 @@ namespace SetRoundsPlugin
 
         public static string setRounds = "5";
 
+        public static int syncRounds = 5;
+
 
         private void Awake()
         {
             new Harmony(ModId).PatchAll();
             NetworkingManager.RegisterEvent(NetworkEventType.SyncRounds, sync => setRounds = (string)sync[0]);
+            GameModeManager.AddHook(GameModeHooks.HookInitEnd, (gm) =>
+            {
+                gm.ChangeSetting("roundsToWinGame", syncRounds);
+            });
         }
+
         private void Start()
         {
 
@@ -43,7 +52,10 @@ namespace SetRoundsPlugin
                 NetworkingManager.RaiseEvent(NetworkEventType.SyncRounds, flag);
             }
             setRounds = flag;
-
+            if (PhotonNetwork.OfflineMode)
+            {
+                int.TryParse(setRounds, out syncRounds);
+            }
         }
 
         private void OnHandShakeCompleted()
@@ -52,48 +64,7 @@ namespace SetRoundsPlugin
             {
                 NetworkingManager.RaiseEvent(NetworkEventType.SyncRounds, setRounds);
             }
-        }
-    }
-}
-
-namespace GM_ArmsRace_Patch
-{
-    [HarmonyPatch(typeof(GM_ArmsRace), "StartGame")]
-    public class GM_ArmsRace_StartGame_Patch
-    { 
-        public static int roundsToSet;
-        [HarmonyPostfix]
-        private static void Postfix(ref int ___roundsToWinGame)
-        {
-            if (int.TryParse(SetRoundsPlugin.SetRounds.setRounds, out roundsToSet))
-            {
-                if (roundsToSet > 1)
-                {
-                    ___roundsToWinGame = roundsToSet;
-                    UIHandler.instance.InvokeMethod("SetNumberOfRounds", roundsToSet);
-                }
-            }
-        }
-    }
-}
-
-namespace GM_DeathMatch_Patch
-{
-    [HarmonyPatch(typeof(RWF.GameModes.GM_Deathmatch), "StartGame")]
-    public class GM_Deathmatch_StartGame_Patch
-    {
-        public static int roundsToSet;
-        [HarmonyPostfix]
-        private static void Postfix(ref int ___roundsToWinGame)
-        {
-            if (int.TryParse(SetRoundsPlugin.SetRounds.setRounds, out roundsToSet))
-            {
-                if (roundsToSet > 1)
-                {
-                    ___roundsToWinGame = roundsToSet;
-                    UIHandler.instance.InvokeMethod("SetNumberOfRounds", roundsToSet);
-                }
-            }
+            int.TryParse(setRounds, out syncRounds);
         }
     }
 }
