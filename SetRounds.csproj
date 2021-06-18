@@ -61,8 +61,9 @@
     <Reference Include="PhotonWebSocket">
       <HintPath>..\Pick Your Poison\Libs\PhotonWebSocket.dll</HintPath>
     </Reference>
-    <Reference Include="RoundsWithFriends">
-      <HintPath>C:\Users\tyler\Desktop\RoundsWithFriends-1.1.0-alpha\BepInEx\plugins\RoundsWithFriends.dll</HintPath>
+    <Reference Include="RoundsWithFriends, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\tyler\AppData\Roaming\r2modmanPlus-local\ROUNDS\profiles\Mods\BepInEx\plugins\olavim-RoundsWithFriends\RoundsWithFriends.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -72,7 +73,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="UnboundLib, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\BaseLibs\UnboundLib.dll</HintPath>
+      <HintPath>C:\Users\tyler\Desktop\willis81808-UnboundLib-2.1.0\plugins\UnboundLib.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\Pick Your Poison\Libs\UnityEngine.dll</HintPath>
