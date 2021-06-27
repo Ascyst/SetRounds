@@ -11,7 +11,7 @@ using UnboundLib.Networking;
 namespace SetRoundsPlugin
 {
     [BepInDependency("com.willis.rounds.unbound", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(ModId, ModName, "1.1.0")]
+    [BepInPlugin(ModId, ModName, "1.1.2")]
     [BepInProcess("Rounds.exe")]
     public class SetRounds : BaseUnityPlugin
     {
@@ -38,7 +38,7 @@ namespace SetRoundsPlugin
         private void Awake()
         {
             new Harmony(ModId).PatchAll();
-            GameModeManager.AddHook(GameModeHooks.HookInitStart, SetRound);
+            GameModeManager.AddHook(GameModeHooks.HookInitEnd, SetRound);
         }
 
 
