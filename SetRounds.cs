@@ -4,83 +4,73 @@ using HarmonyLib;
 using Photon.Pun;
 using UnboundLib;
 using UnboundLib.GameModes;
+using UnboundLib.Utils.UI;
 using UnityEngine;
 using System.Collections;
 using UnboundLib.Networking;
+using TMPro;
 
 namespace SetRoundsPlugin
 {
     [BepInDependency("com.willis.rounds.unbound", BepInDependency.DependencyFlags.HardDependency)]
-    [BepInPlugin(ModId, ModName, "1.1.2")]
+    [BepInPlugin(ModId, ModName, "1.2.0")]
     [BepInProcess("Rounds.exe")]
     public class SetRounds : BaseUnityPlugin
     {
         private struct NetworkEventType
         {
-            public const string SyncRounds = (ModId + "_SyncRounds");
-            public const string SyncPoints = (ModId + "_SyncPoints");
+            public static int SyncRounds = setRounds;
+            public static int SyncPoints = setPoints;
         }
         private const string ModId = "com.ascyst.rounds.setrounds";
 
         private const string ModName = "Set Rounds";
 
-        public static string setRounds = "5";
-        public static string setPoints = "2";
-
-        public static int syncRounds = 5;
-        public static int syncPoints = 2;
-        private IEnumerator SetRound(IGameModeHandler gm)
+        public static int setRounds = 5;
+        public static int setPoints = 2;
+        public IEnumerator SetRound(IGameModeHandler gm)
         {
-            gm.ChangeSetting("roundsToWinGame", syncRounds);
-            gm.ChangeSetting("pointsToWinRound", syncPoints);
+            gm.ChangeSetting("roundsToWinGame", setRounds);
+            gm.ChangeSetting("pointsToWinRound", setPoints);
             yield break;
         }
-        private void Awake()
-        {
-            new Harmony(ModId).PatchAll();
-            GameModeManager.AddHook(GameModeHooks.HookInitEnd, SetRound);
-        }
-
-
 
         private void Start()
         {
-            Unbound.RegisterGUI("Set Rounds per Game", new Action(this.DrawGUI));
-            Unbound.RegisterHandshake(ModId, new Action(this.OnHandShakeCompleted));
+            Unbound.RegisterHandshake(ModId, OnHandShakeCompleted);
+            Unbound.RegisterMenu("Set Rounds", () => { }, NewGUI, null, false);
+            GameModeManager.AddHook(GameModeHooks.HookInitEnd, SetRound);
         }
 
-        private void DrawGUI()
+        void RoundSliderAction(float val)
         {
-            GUILayout.Label("Rounds per Game");
-            var rounds = GUILayout.TextField(setRounds, 3);
+            setRounds = (int)val;
+        }
 
-            GUILayout.Label("Points per Round");
-            var points = GUILayout.TextField(setPoints, 1);
-
-            if (PhotonNetwork.OfflineMode || PhotonNetwork.CurrentRoom == null)
-            {
-                setRounds = rounds;
-                setPoints = points;
-                int.TryParse(setRounds, out syncRounds);
-                int.TryParse(setPoints, out syncPoints);
-            }
+        void PointSliderAction(float val)
+        {
+            setPoints = (int)val;
+        }
+        private void NewGUI(GameObject menu)
+        {
+            MenuHandler.CreateText("Set Rounds", menu, out TextMeshProUGUI _, 60);
+            MenuHandler.CreateSlider("Rounds per Match", menu, 50, 1f, 30f, setRounds, RoundSliderAction, out UnityEngine.UI.Slider roundSlider, true);
+            MenuHandler.CreateSlider("Points per Round", menu, 50, 1f, 30f, setPoints, PointSliderAction, out UnityEngine.UI.Slider pointSlider, true);
         }
 
         private void OnHandShakeCompleted()
-        {
-            int.TryParse(setRounds, out syncRounds);
-            int.TryParse(setPoints, out syncPoints);
+        { 
             if (PhotonNetwork.IsMasterClient)
             {
-                NetworkingManager.RPC_Others(typeof(SetRounds), nameof(UpdateValues), syncRounds, syncPoints);
+                NetworkingManager.RPC_Others(typeof(SetRounds), nameof(UpdateValues), setRounds, setPoints);
             }
         }
 
         [UnboundRPC]
         private static void UpdateValues(int roundsToWin, int pointsToWin)
         {
-            syncRounds = roundsToWin;
-            syncPoints = pointsToWin;
+            setRounds = roundsToWin;
+            setPoints = pointsToWin;
         }
     }
 }
