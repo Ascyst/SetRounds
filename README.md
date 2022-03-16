@@ -6,7 +6,7 @@ Allows you to change the amount of rounds required to win the game. The default 
 2. Use Thunderstore to install the mod. Make sure it's up to date!
 
 ## Usage
-Press F1 in-game to access the UnboundLib mod menu. Click `Set Rounds per Game` and set the number of rounds you want to play. This can only be controlled by the host of the game and cannot be set ingame. 
+Click Mods in the main menu or pause menu. Click Set Rounds. Set custom rounds limit, as well as custom points per round limit. Only the host can set this, everyone will use the host's values. 
 
 ## Questions / Bug Reports / Suggestions
 If you have any issues, you can contact me @Ascyst#4219 on the [ROUNDS modding community Discord](https://discord.gg/zUtsjXWeWk)
