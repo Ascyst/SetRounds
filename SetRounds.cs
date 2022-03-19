@@ -31,15 +31,15 @@ namespace SetRoundsPlugin
 
         public IEnumerator SetRound(IGameModeHandler gm)
         {
-            gm.ChangeSetting("roundsToWinGame", setRounds);
-            gm.ChangeSetting("pointsToWinRound", setPoints);
+            if (setRounds > 0) { gm.ChangeSetting("roundsToWinGame", setRounds); }
+            if (setPoints > 0) { gm.ChangeSetting("pointsToWinRound", setPoints); }
             yield break;
         }
 
         private void Awake()
         {
-            SetRoundsConfig = Config.Bind(CompatibilityModName, "Number of rounds required to win the game", 5);
-            SetPointsConfig = Config.Bind(CompatibilityModName, "Number of points required to win a round", 2);
+            SetRoundsConfig = Config.Bind(CompatibilityModName, "Number of rounds required to win the game", 0, "0 uses game mode's default value");
+            SetPointsConfig = Config.Bind(CompatibilityModName, "Number of points required to win a round", 0, "0 uses game mode's default value");
         }
         private void Start()
         {
@@ -66,8 +66,9 @@ namespace SetRoundsPlugin
         private void NewGUI(GameObject menu)
         {
             MenuHandler.CreateText("Set Rounds", menu, out TextMeshProUGUI _, 60);
-            MenuHandler.CreateSlider("Rounds per Match", menu, 50, 1f, 30f, SetRoundsConfig.Value, RoundSliderAction, out UnityEngine.UI.Slider roundSlider, true);
-            MenuHandler.CreateSlider("Points per Round", menu, 50, 1f, 30f, SetPointsConfig.Value, PointSliderAction, out UnityEngine.UI.Slider pointSlider, true);
+            MenuHandler.CreateSlider("Rounds per Match", menu, 50, 0f, 30f, SetRoundsConfig.Value, RoundSliderAction, out UnityEngine.UI.Slider roundSlider, true);
+            MenuHandler.CreateSlider("Points per Round", menu, 50, 0f, 30f, SetPointsConfig.Value, PointSliderAction, out UnityEngine.UI.Slider pointSlider, true);
+            MenuHandler.CreateText("0 corresponds to the game mode's default value", menu, out TextMeshProUGUI _, 30);
         }
 
         private void OnHandShakeCompleted()
